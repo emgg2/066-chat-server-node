@@ -3,6 +3,7 @@ const express  = require('express');
 const http     = require('http');
 const socketio = require('socket.io');
 const path     = require('path');
+const cors     = require('cors');
 
 const Sockets  = require('./sockets');
 const { dbConnection } = require('../database/config');
@@ -25,9 +26,20 @@ class Server {
         this.io = socketio( this.server, { /* configuraciones */ } );
     }
 
+    // un middleware es algo que se va a ejecutar cada vez q se pase por un punto
     middlewares() {
         // Desplegar el directorio público
         this.app.use( express.static( path.resolve( __dirname, '../public' ) ) );
+        // CORS
+        this.app.use (cors());
+
+        // parseo del body
+        this.app.use(express.json());
+
+        // API endpoint, cuando se acceda por /api/login , se va a cargar lo que haya en router/auth
+        this.app.use('/api/login', require('../router/auth'))
+
+
     }
 
     // Esta configuración se puede tener aquí o como propieda de clase
