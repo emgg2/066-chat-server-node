@@ -37,7 +37,8 @@ class Server {
         this.app.use(express.json());
 
         // API endpoint, cuando se acceda por /api/login , se va a cargar lo que haya en router/auth
-        this.app.use('/api/login', require('../router/auth'))
+        this.app.use('/api/login', require('../router/auth'));
+        this.app.use('/api/messages', require('../router/messages'));
 
 
     }

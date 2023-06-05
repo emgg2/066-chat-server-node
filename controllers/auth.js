@@ -35,6 +35,7 @@ const createUser = async(req, res = response) => {
     
 
     res.json({
+        ok:true,
         user,
         token
     })
@@ -53,19 +54,63 @@ const createUser = async(req, res = response) => {
 const login = async(req, res) => {
    
     const { email, password } = req.body;
+    
 
-    res.json({
-        ok: true,
-        msg: 'login',
-        email, 
-        password
-    })
+    try {
+        // verify email
+        
+        const userBD = await User.findOne({ email });
+        if( !userBD ) {
+            return res.status(404).json({
+                ok:false,
+                msg: 'Email not found'
+
+            });
+        }
+        //validar password
+        const validPassword = bcrypt.compareSync( password, userBD.password );
+        if( !validPassword) {
+            return res.status(404).json({
+                ok:false,
+                msg: 'Invalid Password'
+
+            });
+        }
+
+        const token = await generateJWT( userBD.id );
+        res.json({
+            ok: true,
+            user: userBD,
+            token
+       
+        })
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: "Talk to administrator"
+        });
+        
+    }
+
+
 }
 
 const renewToken = async(req, res) => {
+
+    const uid = req.uid;
+
+    // Generate a new JWT
+    const token = await generateJWT( uid );
+
+    // Get User by uid
+    const user = await User.findById(uid);
+
     res.json({
         ok: true,
-        msg: 'renew Token'
+        user,
+        token
     })
 }
 
