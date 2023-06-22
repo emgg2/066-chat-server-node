@@ -40,8 +40,17 @@ class Sockets {
             const message = await saveMessage( payload );            
             this.io.to( payload.to ).emit( 'personal-message', message);
             this.io.to( payload.from ).emit( 'personal-message', message);
-          })
+            console.log("mensaje personnal")
+          });
                   
+
+          socket.on('remove-message', (messageId) => {
+            console.log('remove-message', messageId);
+          });
+
+          socket.on('remove-chat', () =>{
+            console.log('remnove-chat');
+          })
       
 
           // TODO: Disconnect
